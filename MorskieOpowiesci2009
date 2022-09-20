@@ -1,0 +1,66 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+int odl[10001][10001];
+vector <int> T[10001];//powyzej 5000 nieparzyste, ponizej parzyste
+queue <int> Q;
+
+void BFS(int i){
+    odl[i][i]=0;
+    Q.push(i);
+    while (Q.size()!=0){
+        int t = Q.front();
+        for (int j=0; j < T[t].size();j++){
+            if(odl[T[t][j]][i]==-1){
+                odl[T[t][j]][i]=odl[t][i]+1;
+                Q.push(T[t][j]);
+            }
+        }
+        Q.pop();
+    }
+    }
+
+int main(){
+    ios_base::sync_with_stdio(0);
+    cin.tie(0);
+    cout.tie(0);
+    int n,m,k,temp1,temp2,temp3;
+    cin >> n >> m >> k;
+    for (int i=0;i<m;i++){
+        cin >> temp1 >> temp2;
+        T[5000+temp1].push_back(temp2);
+        T[temp1].push_back(5000+temp2);
+        T[5000+temp2].push_back(temp1);
+        T[temp2].push_back(5000+temp1);
+    }
+    for (int i=1; i <= 10000;i++){
+            for (int j=1; j <= 10000;j++){
+                    odl[i][j] = -1;
+            }
+    }
+    for (int i=1; i <= 10000;i++){
+        BFS(i);
+    }
+
+    for (int z=0; z < k;z++){
+        cin  >> temp1 >> temp2 >> temp3;
+        if(temp3 % 2 == 1){
+            if (odl[temp1+5000][temp2] <=temp3 && odl[temp1+5000][temp2] != -1){
+                cout << "TAK\n";
+            }
+            else{
+                cout << "NIE\n";
+            }
+        }
+        else{
+            if (odl[temp1][temp2]<=temp3 && odl[temp1][temp2] != -1){
+                cout << "TAK\n";
+            }
+            else{
+                cout << "NIE\n";
+            }
+        }
+    }
+
+
+}
