@@ -1,7 +1,8 @@
 #include <bits/stdc++.h>
 using namespace std;
-
+//z grubsza nie musimy pamietac wsyzstiego tylko odpowiednie numery ( te o ktore pytamy)
 int odl[10001][10001];
+int inputy[1000000][3];
 vector <int> T[10001];//powyzej 5000 nieparzyste, ponizej parzyste
 queue <int> Q;
 
@@ -41,26 +42,7 @@ int main(){
     for (int i=1; i <= 10000;i++){
         BFS(i);
     }
-
     for (int z=0; z < k;z++){
-        cin  >> temp1 >> temp2 >> temp3;
-        if(temp3 % 2 == 1){
-            if (odl[temp1+5000][temp2] <=temp3 && odl[temp1+5000][temp2] != -1){
-                cout << "TAK\n";
-            }
-            else{
-                cout << "NIE\n";
-            }
-        }
-        else{
-            if (odl[temp1][temp2]<=temp3 && odl[temp1][temp2] != -1){
-                cout << "TAK\n";
-            }
-            else{
-                cout << "NIE\n";
-            }
-        }
-    }
-
+        cin  >>  >> temp2 >> temp3;
 
 }
