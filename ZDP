@@ -1,0 +1,89 @@
+#include <bits/stdc++.h>
+using namespace std;
+const int stala = 1048576; //16
+long long Drzewo[stala][2];//0 to wynik, 1 to indeks
+int n,m;
+long long Odl[stala];
+
+struct para{
+    int miasto;
+    int odl;
+    };
+vector <para> T[500001];
+
+void initalize_drzewo(){
+    for (int i=0; i < stala;i++){
+        Drzewo[i][0]=-1;
+    }
+    for (int i=stala/2;i < stala;i++){
+        Drzewo[i][1]=i-stala/2+1;
+    }
+    for (int i=stala/2-1;i > 0;i--){
+        Drzewo[i][1]=Drzewo[2*i][1];
+    }
+}
+void update(int miejsce,long long wartosc){
+    miejsce = miejsce + stala/2 - 1;
+    Drzewo[miejsce][0]=wartosc;
+    while (miejsce != 0){
+        miejsce = miejsce/2;
+        if ((Drzewo[2*miejsce][0] != -1 && Drzewo[2*miejsce][0] < Drzewo[2*miejsce+1][0]) || Drzewo[2*miejsce+1][0] == -1){
+            Drzewo[miejsce][0]=Drzewo[2*miejsce][0];
+            Drzewo[miejsce][1]=Drzewo[2*miejsce][1];
+        }
+        else{
+            Drzewo[miejsce][0]=Drzewo[2*miejsce+1][0];
+            Drzewo[miejsce][1]=Drzewo[2*miejsce+1][1];
+        }
+    }
+}
+
+
+void Dijkstra(){
+    update(1,0);
+    while(Drzewo[1][0] != -1){
+        int id = Drzewo[1][1];
+        Odl[id]=Drzewo[stala/2+id-1][0];
+        //cout << id << " s "<<Odl[id] << endl;
+        for (int i=0; i < T[id].size();i++){
+            if(Odl[T[id][i].miasto]==-1){
+                if(Drzewo[T[id][i].miasto+stala/2-1][0]!=-1){
+                    update(T[id][i].miasto,min(Drzewo[T[id][i].miasto+stala/2-1][0],Drzewo[id+stala/2-1][0]+T[id][i].odl));
+                }
+                else{
+                    update(T[id][i].miasto,Drzewo[id+stala/2-1][0]+T[id][i].odl);
+                }
+            }
+        }
+        update(id,-1);
+        //cout << Odl[id] <<endl;
+    }
+
+}
+
+
+int main(){
+    ios_base::sync_with_stdio(0);
+    cin.tie(0);
+    cin >> n >> m;
+    for (int i=0; i < m;i++){
+        int temp1,temp2,temp3;
+        cin >> temp1 >> temp2 >> temp3;
+        para temp4;
+        temp4.odl = temp3;
+        temp4.miasto = temp2;
+        T[temp1].push_back(temp4);
+        temp4.miasto = temp1;
+        T[temp2].push_back(temp4);
+    }
+    for (int i=1; i <= n;i++){
+        Odl[i]=-1;
+    }
+    initalize_drzewo();
+    Dijkstra();
+    for(int i=1; i <= n;i++){
+        cout << Odl[i] <<endl;
+    }
+
+
+    }
