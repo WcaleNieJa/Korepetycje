@@ -1,0 +1,141 @@
+#include <bits/stdc++.h>
+using namespace std;
+const int stala = 16384;
+long Drzewo[2*stala][2];//0 wartosc, 1 ojciec
+int Odwiedzonosc[5001];
+long Odl[5001];
+long Odl2[5001];
+int n,m;
+struct para{
+    long odl;
+    int miasto;};
+vector <para> T[stala];
+vector <para> T2[stala];
+
+void start_drzewa(){
+    for (int i=1; i < 2*stala;i++){
+        Drzewo[i][0]=-1;
+    }
+    for (int i=stala; i < 2*stala;i++){
+        Drzewo[i][1]=i-stala+1;
+    }
+    for (int i=stala-1; i > 0;i--){
+        Drzewo[i][1]=Drzewo[2*i][1];
+    }
+    }
+
+void update(int indeks,long wartosc){
+    indeks = indeks + stala - 1;
+    Drzewo[indeks][0]=wartosc;
+    while (indeks > 0){
+        indeks = indeks/2;
+        if(Drzewo[2*indeks+1][0]==-1 || (Drzewo[2*indeks][0]!=-1 && Drzewo[2*indeks][0] <= Drzewo[2*indeks+1][0])){
+            Drzewo[indeks][0]=Drzewo[2*indeks][0];
+            Drzewo[indeks][1]=Drzewo[2*indeks][1];
+        }
+        else{
+            Drzewo[indeks][0]=Drzewo[2*indeks+1][0];
+            Drzewo[indeks][1]=Drzewo[2*indeks+1][1];
+        }
+    }
+    }
+
+void Djikstra(int start){
+    start_drzewa();
+    for (int i=1; i <= n;i++){
+        Odl[i]=-1;
+        Odwiedzonosc[i]=0;
+    }
+    Odl[start]=0;
+    update(start,0);
+    while (Drzewo[1][0] != -1){
+        int obecny = Drzewo[1][1];
+        //cout << obecny << " ";
+        Odl[obecny]=Drzewo[1][0];
+        Odwiedzonosc[obecny]=2;
+        for (int i = 0; i < T[obecny].size();i++){
+            if(Odwiedzonosc[T[obecny][i].miasto]!=2){//juz nie przeslismy
+                if(Odwiedzonosc[T[obecny][i].miasto]==0){
+                    Odwiedzonosc[T[obecny][i].miasto]=1;
+                    Odl[T[obecny][i].miasto]=T[obecny][i].odl+Odl[obecny];
+                    update(T[obecny][i].miasto,Odl[T[obecny][i].miasto]);
+                }
+                else{
+                    Odl[T[obecny][i].miasto]=min(Odl[T[obecny][i].miasto],T[obecny][i].odl+Odl[obecny]);
+                    update(T[obecny][i].miasto,Odl[T[obecny][i].miasto]);
+                }
+            }
+        }
+
+
+        update(obecny,-1);
+    }
+    }
+
+void Djikstra2(int start){
+    start_drzewa();
+    for (int i=1; i <= n;i++){
+        Odl[i]=-1;
+        Odwiedzonosc[i]=0;
+    }
+    Odl[start]=0;
+    update(start,0);
+    while (Drzewo[1][0] != -1){
+        int obecny = Drzewo[1][1];
+        //cout << obecny << " ";
+        Odl[obecny]=Drzewo[1][0];
+        Odwiedzonosc[obecny]=2;
+        for (int i = 0; i < T2[obecny].size();i++){
+            if(Odwiedzonosc[T2[obecny][i].miasto]!=2){//juz nie przeslismy
+                if(Odwiedzonosc[T2[obecny][i].miasto]==0){
+                    Odwiedzonosc[T2[obecny][i].miasto]=1;
+                    Odl[T2[obecny][i].miasto]=T2[obecny][i].odl+Odl[obecny];
+                    update(T2[obecny][i].miasto,Odl[T2[obecny][i].miasto]);
+                }
+                else{
+                    Odl[T2[obecny][i].miasto]=min(Odl[T2[obecny][i].miasto],T2[obecny][i].odl+Odl[obecny]);
+                    update(T2[obecny][i].miasto,Odl[T2[obecny][i].miasto]);
+                }
+            }
+        }
+
+
+        update(obecny,-1);
+    }
+    }
+
+int main(){
+    ios_base::sync_with_stdio(0);
+    cin.tie(0);
+    cin >> n;
+    long Odl2[n+1];
+    for (int i=1; i <= n;i++){
+        cin >> Odl2[i];
+        Odl2[i] /= 2;
+    }
+    cin >> m;
+    for (int i=1; i <= m;i++){
+        para temp4;
+        int temp1,temp2,temp3;
+        cin >> temp1 >> temp2 >> temp3;
+        temp4.miasto = temp2;
+        temp4.odl = temp3;
+        T[temp1].push_back(temp4);
+        temp4.miasto = temp1;
+        T2[temp2].push_back(temp4);
+    }
+    Djikstra(1);
+    for (int i=1; i <= n;i++){
+        if(Odl[i]!=-1){Odl2[i] += Odl[i];}
+        else{
+            Odl2[i]=-1;
+        }
+    }
+    long minimum = Odl2[1];
+    Djikstra2(1);
+    for (int i=2; i <= n;i++){
+        if(Odl[i] > -1 && Odl2[i] > -1)minimum = min(minimum,Odl[i]+Odl2[i]);
+        //cout << Odl[i] << " " <<Odl2[i]<<endl;
+    }
+    cout << minimum;
+    }
